@@ -22,6 +22,9 @@ On the failure side, an ideal system isn’t disrupted by the loss of a server. 
 Both horizontal scalability and redundancy are usually achieved via load balancing.
 
 (This article won’t address vertical scalability, as it is usually an undesirable property for a large system, as there is inevitably a point where it becomes cheaper to add capacity in the form on additional machines rather than additional resources of one machine, and redundancy and vertical scaling can be at odds with one-another.)
+![image](https://user-images.githubusercontent.com/34215341/180774723-369183f3-9e16-4c96-a677-60bcd856f203.png)
+
+
 
 Load Balancing
 
@@ -63,6 +66,9 @@ In practice, caching is important earlier in the development process than load-b
 Application vs. database caching
 There are two primary approaches to caching: application caching and database caching (most systems rely heavily on both).
 
+![image](https://user-images.githubusercontent.com/34215341/180774816-ea76e2b8-ae96-4639-85ae-05b059d0f78a.png)
+
+
 Application Cache
 
 Application caching requires explicit integration in the application code itself. Usually it will check if a value is in the cache; if not, retrieve the value from the database; then write that value into the cache (this value is especially common if you are using a cache which observes the least recently used caching algorithm). The code typically looks like (specifically this is a read-through cache, as it reads the value from the database into the cache if it is missing from the cache):
@@ -77,6 +83,8 @@ if user_blob is None:
 else:
     return json.loads(user_blob)
 The other side of the coin is database caching.
+
+![image](https://user-images.githubusercontent.com/34215341/180774884-34a796ea-60a2-4ec7-9fb5-539ba560b9d8.png)
 
 Database Cache
 
@@ -95,6 +103,9 @@ A particular kind of cache (some might argue with this usage of the term, but I 
 Content Distribution Network
 
 CDNs take the burden of serving static media off of your application servers (which are typically optimzed for serving dynamic pages rather than static media), and provide geographic distribution. Overall, your static assets will load more quickly and with less strain on your servers (but a new strain of business expense).
+
+![image](https://user-images.githubusercontent.com/34215341/180774937-414c8aba-948f-49e3-9169-505d05e7cfde.png)
+
 
 In a typical CDN setup, a request will first ask your CDN for a piece of static media, the CDN will serve that content if it has it locally available (HTTP headers are used for configuring how the CDN caches a given piece of content). If it isn’t available, the CDN will query your servers for the file and then cache it locally and serve it to the requesting user (in this configuration they are acting as a read-through cache).
 
@@ -121,6 +132,9 @@ Dividing work between off-line work handled by a consumer and in-line work done 
 
 perform almost no work in the consumer (merely scheduling a task) and inform your user that the task will occur offline, usually with a polling mechanism to update the interface once the task is complete (for example, provisioning a new VM on Slicehost follows this pattern), or
 perform enough work in-line to make it appear to the user that the task has completed, and tie up hanging ends afterwards (posting a message on Twitter or Facebook likely follow this pattern by updating the tweet/message in your timeline but updating your followers’ timelines out of band; it’s simple isn’t feasible to update all the followers for a Scobleizer in real-time).
+
+![image](https://user-images.githubusercontent.com/34215341/180775095-c44a1342-1400-4564-846a-1581b59aef34.png)
+
 Message Queue
 
 Message queues have another benefit, which is that they allow you to create a separate machine pool for performing off-line processing rather than burdening your web application servers. This allows you to target increases in resources to your current performance or throughput bottleneck rather than uniformly increasing resources across the bottleneck and non-bottleneck systems.
@@ -133,6 +147,9 @@ Does anyone know of recognized tools which solve this problem? I’ve seen many 
 Map-reduce
 If your large scale application is dealing with a large quantity of data, at some point you’re likely to add support for map-reduce, probably using Hadoop, and maybe Hive or HBase.
 
+![image](https://user-images.githubusercontent.com/34215341/180775134-82ba612a-c8f3-4141-a831-923e8667616c.png)
+
+
 Map Reduce
 
 Adding a map-reduce layer makes it possible to perform data and/or processing intensive operations in a reasonable amount of time. You might use it for calculating suggested users in a social graph, or for generating analytics reports.
@@ -141,6 +158,8 @@ For sufficiently small systems you can often get away with adhoc queries on a SQ
 
 Platform layer
 Most applications start out with a web application communicating directly with a database. This approach tends to be sufficient for most applications, but there are some compelling reasons for adding a platform layer, such that your web applications communicate with a platform layer which in turn communicates with your databases.
+
+![image](https://user-images.githubusercontent.com/34215341/180775186-434b51b7-ab11-4bd5-9721-0d564c70e675.png)
 
 Platform Layer
 
